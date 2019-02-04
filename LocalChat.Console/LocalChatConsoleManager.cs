@@ -1,5 +1,7 @@
 ﻿using LocalChat.Service;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 
 namespace LocalChat.Console
@@ -9,6 +11,8 @@ namespace LocalChat.Console
         private List<Message> Messages { get; }
 
         private readonly LocalChatClient _localChat;
+
+        private string _userInput;
 
         public LocalChatConsoleManager(string userName)
         {
@@ -30,11 +34,29 @@ namespace LocalChat.Console
 
         private void ShowMessageInput()
         {
-            while(true)
+            ConsoleKeyInfo e;
+
+            while (true)
             {
-                string message = System.Console.ReadLine();
-                _localChat.SendUserMessage(message);
-            }            
+                e = System.Console.ReadKey();
+
+                if (e.Key == ConsoleKey.Enter)
+                {
+                    if (string.IsNullOrEmpty(_userInput) || string.IsNullOrWhiteSpace(_userInput))
+                    {
+                        _userInput = "";
+                        continue;
+                    }
+
+                    _localChat.SendUserMessage(_userInput);
+                    _userInput = "";
+                }
+
+                else
+                {
+                    _userInput += e.KeyChar;
+                }
+            }
         }
 
         private void PrintReceivedMessageToConsole(object sender, MessageReceiveEventArgs messageReceiveEventArgs)
@@ -45,8 +67,11 @@ namespace LocalChat.Console
 
             foreach (var m in Messages)
             {
-                System.Console.WriteLine($"{m.CreatedDate.ToShortTimeString()} {m.Text}");
+                System.Console.WriteLine($"{m.CreatedDate.ToShortTimeString()} {m.Username}: {m.Text}");
             }
+
+            if (!string.IsNullOrEmpty(_userInput))
+                System.Console.Write(_userInput);
         }
     }
 }
