@@ -16,7 +16,7 @@ namespace LocalChat.Service
 
         public LocalChatClient(string userName)
         {
-            // Multicast IP addresses are within the Class D range of 224.0.0.0-239.255.255.255 - we can join any of these addresses
+            // Multicast IP addresses are within the class D range of 224.0.0.0-239.255.255.255 - we can join any of these addresses
             _ipAddress = IPAddress.Parse("239.0.0.222"); // one of the reserved for local needs UDP addresses
             _udpClient = new UdpClient();
             _udpClient.JoinMulticastGroup(_ipAddress);
@@ -45,7 +45,6 @@ namespace LocalChat.Service
             IPEndPoint localEP = new IPEndPoint(IPAddress.Any, 2222);
 
             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            client.ExclusiveAddressUse = false;
 
             client.Client.Bind(localEP);
 
